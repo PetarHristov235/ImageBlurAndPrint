@@ -3,47 +3,45 @@ package org.example;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) throws IOException {
 
-        Scanner scanner=new Scanner(System.in);
+        final Scanner scanner = new Scanner(System.in);
 
 
-        try {
-            final Class<Main> mainClass = Main.class;
-            final ClassLoader classLoader = mainClass.getClassLoader();
-            final URL imageUrl = classLoader.getResource(args[0]);
 
-            final BufferedImage bufferedImage = ImageIO.read(imageUrl);
-            final String outputPath = classLoader.getResource("").getPath();
-            final File outputFIle = new File(outputPath + "/blurred.jpg");
+        final Class<Main> mainClass = Main.class;
+        final ClassLoader classLoader = mainClass.getClassLoader();
+        final URL imageUrl = classLoader.getResource("download.jpg");
 
-            System.out.print("Insert color filter: ");
-            String inputColorFilter=scanner.nextLine();
+        assert null != imageUrl;
+        final BufferedImage bufferedImage = ImageIO.read(imageUrl);
+        final String outputPath = Objects.requireNonNull(classLoader.getResource("")).getPath();
+        final File outputFIle = new File(outputPath + "/blurred.jpg");
 
-            final FilteringImage colorFilterImage=new FilteringImage();
-            colorFilterImage.setTypeOfFilter(inputColorFilter);
+        System.out.print("Insert color filter: ");
+        final String inputColorFilter = scanner.nextLine();
 
-            final BlurFilter blurFilter =new BlurFilter();
+        final FilteringImage colorFilterImage = new FilteringImage();
+        colorFilterImage.setTypeOfFilter(inputColorFilter);
 
-            blurFilter.filter(bufferedImage);
-            colorFilterImage.filter(bufferedImage);
+        final BlurFilter blurFilter = new BlurFilter();
 
-            final FilteredImageSave filteredImageSave = new FilteredImageSave(outputFIle);
-            filteredImageSave.write(colorFilterImage.filter(bufferedImage));
-            BufferedImage printImage=ImageIO.read(outputFIle);
-            final PrintActionListener pal=new PrintActionListener(printImage);
-            pal.run();
+        blurFilter.filter(bufferedImage);
+        colorFilterImage.filter(bufferedImage);
 
-        } catch (Exception e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        }
+        final FilteredImageSave filteredImageSave = new FilteredImageSave(outputFIle);
+        filteredImageSave.write(colorFilterImage.filter(bufferedImage));
+        final BufferedImage printImage = ImageIO.read(outputFIle);
+        final PrintActionListener pal = new PrintActionListener(printImage);
+        pal.run();
 
     }
 }

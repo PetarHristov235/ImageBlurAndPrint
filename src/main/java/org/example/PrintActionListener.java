@@ -8,15 +8,15 @@ import java.awt.print.PrinterJob;
 
 public class PrintActionListener implements Runnable {
 
-    private BufferedImage       image;
+    private final BufferedImage       image;
 
-    public PrintActionListener(BufferedImage image) {
+    public PrintActionListener(final BufferedImage image) {
         this.image = image;
     }
 
     @Override
     public void run() {
-        PrinterJob printJob = PrinterJob.getPrinterJob();
+        final PrinterJob printJob = PrinterJob.getPrinterJob();
         printJob.setPrintable(new ImagePrintable(printJob, image));
 
         if (printJob.printDialog()) {
@@ -28,34 +28,35 @@ public class PrintActionListener implements Runnable {
         }
     }
 
-    private class ImagePrintable implements Printable {
+    private static class ImagePrintable implements Printable {
 
-        private double          x, y, width;
+        private final double          x;
+        private final double y;
+        private final double width;
 
-        private int             orientation;
+        private final int             orientation;
 
-        private BufferedImage   image;
+        private final BufferedImage   image;
 
-        public ImagePrintable(PrinterJob printJob, BufferedImage image) {
-            PageFormat pageFormat = printJob.defaultPage();
-            this.x = pageFormat.getImageableX();
-            this.y = pageFormat.getImageableY();
-            this.width = pageFormat.getImageableWidth();
-            this.orientation = pageFormat.getOrientation();
+        public ImagePrintable(final PrinterJob printJob, final BufferedImage image) {
+            final PageFormat pageFormat = printJob.defaultPage();
+            x = pageFormat.getImageableX();
+            y = pageFormat.getImageableY();
+            width = pageFormat.getImageableWidth();
+            orientation = pageFormat.getOrientation();
             this.image = image;
         }
 
         @Override
-        public int print(Graphics g, PageFormat pageFormat, int pageIndex)
-                throws PrinterException {
-            if (pageIndex == 0) {
-                int pWidth = 0;
-                int pHeight = 0;
-                if (orientation == PageFormat.PORTRAIT) {
-                    pWidth = (int) Math.min(width, (double) image.getWidth());
+        public int print(final Graphics g, final PageFormat pageFormat, final int pageIndex) {
+            if (0 == pageIndex) {
+                final int pWidth;
+                final int pHeight;
+                if (PageFormat.PORTRAIT == orientation) {
+                    pWidth = (int) Math.min(width, image.getWidth());
                     pHeight = pWidth * image.getHeight() / image.getWidth();
                 } else {
-                    pHeight = (int) Math.min(width, (double) image.getHeight());
+                    pHeight = (int) Math.min(width, image.getHeight());
                     pWidth = pHeight * image.getWidth() / image.getHeight();
                 }
                 g.drawImage(image, (int) x, (int) y, pWidth, pHeight, null);

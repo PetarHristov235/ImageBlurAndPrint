@@ -6,15 +6,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 public class FilteredImageSave implements ImageWriter {
-    private File file;
-    protected FilteredImageSave(File file) {
+
+    private final File file;
+
+    protected FilteredImageSave(final File file) {
 
         this.file = file;
     }
 
-
     @Override
-    public void write(BufferedImage bufferedImage) {
+    public void write(final BufferedImage bufferedImage) {
         try {
             final FileOutputStream blurredImageOutputStream = new FileOutputStream(file);
             ImageIO.write(bufferedImage, "jpg", blurredImageOutputStream);
